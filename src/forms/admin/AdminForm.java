@@ -39,8 +39,6 @@ public class AdminForm extends JFrame {
 
         displayData();
 
-
-
         btnDisplayData.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -77,7 +75,17 @@ public class AdminForm extends JFrame {
         updateButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                updateUser();
+
+                String sql = "UPDATE users SET name = ?, email = ?, phone = ?, address = ?, password = ? WHERE id = " + getSelectedData()[0] + ";";
+
+                addUserToDatabase(sql,
+                        tfName.getText(),
+                        tfEmail.getText(),
+                        tfPhone.getText(),
+                        tfAddress.getText(),
+                        tfPassword.getText()
+                );
+                displayData();
             }
         });
 
@@ -85,7 +93,12 @@ public class AdminForm extends JFrame {
         addDataButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
+                String sql = "INSERT INTO users (name, email, phone, address, password) " +
+                        "VALUES (?, ?, ?, ?, ?)";
+
                 addUserToDatabase(
+                        sql,
                 tfName.getText(),
                 tfEmail.getText(),
                 tfPhone.getText(),
@@ -178,41 +191,10 @@ public class AdminForm extends JFrame {
         }
     }
 
-    private void updateUser() {
-
-        User user;
-
-        if (getSelectedData()[1].isEmpty() || getSelectedData()[2].isEmpty() || getSelectedData()[5].isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                    "Please enter all required fields",
-                    "Try again",
-                    JOptionPane.ERROR_MESSAGE
-            );
-            return;
-        }
-
-        user = addUserToDatabase(getSelectedData()[1],
-                getSelectedData()[2],
-                getSelectedData()[3],
-                getSelectedData()[4],
-                getSelectedData()[5]
-                );
-
-        if (user != null) {
-
-                JOptionPane.showMessageDialog(this,
-                        "Data change successfully", "Data change",
-                        JOptionPane.PLAIN_MESSAGE);
-
-            dispose();
-
-        }
-    }
 
 
 
-
-    private  User addUserToDatabase(String name, String email, String phone, String address, String password) {
+    private  User addUserToDatabase(String sql, String name, String email, String phone, String address, String password) {
 
         User user = null;
 
@@ -224,16 +206,13 @@ public class AdminForm extends JFrame {
             );
 
             Statement stmt = conn.createStatement();
-            String sql = "INSERT INTO users (name, email, phone, address, password) " +
-                    "VALUES (?, ?, ?, ?, ?)";
+
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, email);
             preparedStatement.setString(3, phone);
             preparedStatement.setString(4, address);
             preparedStatement.setString(5, password);
-
-
 
            Connection connEmail = DriverManager.getConnection(
                             ConnectToDatabase.DB_URL,
@@ -244,7 +223,7 @@ public class AdminForm extends JFrame {
                     statementEmail.setString(1, email);
                     ResultSet resultSetEmail = statementEmail.executeQuery();
 
-                    if (resultSetEmail.next()) {
+                    if (resultSetEmail.next() && !email.equals(tfEmail.getText())) {
                         JOptionPane.showMessageDialog(this,
                                 "Email " + email + " already used!",
                                 "Email already used",
@@ -269,6 +248,7 @@ public class AdminForm extends JFrame {
                             user.phone = phone;
                             user.address = address;
                             user.password = password;
+
                         } else {
                             JOptionPane.showMessageDialog(this,
                                     "Failed to register new user!",
