@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.sql.*;
 
 public class LoginForm extends JDialog {
@@ -28,35 +29,33 @@ public class LoginForm extends JDialog {
         btnLogin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String email = tfEmail.getText();
-                String password = String.valueOf(pfPassword.getPassword());
-
-                user = getAuthenticatedUser(email, password);
-
-                if (user != null) {
-                    dispose();
-                    showData(user);
-
-                } else {
-                    JOptionPane.showMessageDialog(LoginForm.this,
-                            "Email or Password Invalid",
-                            "Try again",
-                            JOptionPane.ERROR_MESSAGE);
-                }
+              login();
             }
         });
         btnCancel.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(LoginForm.this,
-                        "Operation canceled",
-                        "Canceled",
-                        JOptionPane.ERROR_MESSAGE);
-                dispose();
+               cancel();
             }
         });
 
+        KeyStroke keystrokeCancel = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
+        loginPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keystrokeCancel, "ESCAPE");
+        loginPanel.getActionMap().put("ESCAPE", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cancel();
+            }
+        });
 
+        KeyStroke keystrokeLogin = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false);
+        loginPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keystrokeLogin, "ENTER");
+        loginPanel.getActionMap().put("ENTER", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                login();
+            }
+        });
 
         setVisible(true);
     }
@@ -115,9 +114,36 @@ public class LoginForm extends JDialog {
                             "Address: " + user.address, "Successful Authentication of: " + user.name,
                     JOptionPane.PLAIN_MESSAGE);
 
+            new UserForm(null);
+
         } else {
             System.out.println("Authentication canceled");
         }
+    }
 
+    private void cancel() {
+        JOptionPane.showMessageDialog(LoginForm.this,
+                "Operation canceled",
+                "Canceled",
+                JOptionPane.ERROR_MESSAGE);
+        dispose();
+    }
+
+    private void login() {
+        String email = tfEmail.getText();
+        String password = String.valueOf(pfPassword.getPassword());
+
+        user = getAuthenticatedUser(email, password);
+
+        if (user != null) {
+            dispose();
+            showData(user);
+
+        } else {
+            JOptionPane.showMessageDialog(LoginForm.this,
+                    "Email or Password Invalid",
+                    "Try again",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
 }

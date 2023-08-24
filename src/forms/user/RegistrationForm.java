@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.sql.*;
 
 public class RegistrationForm extends JDialog {
@@ -35,17 +36,29 @@ public class RegistrationForm extends JDialog {
                 registerUser();
             }
 
-
         });
         btnCancel.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(RegistrationForm.this,
-                        "Operation canceled",
-                        "Canceled",
-                        JOptionPane.ERROR_MESSAGE);
-                dispose();
+                cancel();
             }
+        });
+
+        KeyStroke keystrokeCancel = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
+        registerPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keystrokeCancel, "ESCAPE");
+        registerPanel.getActionMap().put("ESCAPE", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cancel();
+            }
+        });
+
+        KeyStroke keystrokeLogin = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false);
+        registerPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keystrokeLogin, "ENTER");
+        registerPanel.getActionMap().put("ENTER", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                registerUser();            }
         });
 
         setVisible(true);
@@ -176,4 +189,15 @@ public class RegistrationForm extends JDialog {
             System.out.println("Registration canceled");
         }
     }
+
+    public void cancel(){
+        JOptionPane.showMessageDialog(RegistrationForm.this,
+                "Operation canceled",
+                "Canceled",
+                JOptionPane.ERROR_MESSAGE);
+        dispose();
+    }
+
+
+
 }

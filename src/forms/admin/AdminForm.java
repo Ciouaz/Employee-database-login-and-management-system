@@ -1,23 +1,17 @@
 package forms.admin;
 
 import application.ConnectToDatabase;
-import application.User;
-import forms.user.RegistrationForm;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.sql.*;
 
 public class AdminForm extends JFrame {
     private JTable tbDatabase;
     private JButton btnDisplayData;
     private JButton updateButton;
-    private JButton btnClear;
     private JPanel JPanel;
     private JPanel adminPanel;
     private JTextField tfEmail;
@@ -39,6 +33,7 @@ public class AdminForm extends JFrame {
 
         displayData();
 
+        // Change to refresh:
         btnDisplayData.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -46,29 +41,32 @@ public class AdminForm extends JFrame {
             }
         });
 
-
-        btnClear.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                tbDatabase.setModel(new DefaultTableModel());
-            }
-
-        });
-
-
         tbDatabase.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
 
                 getSelectedData();
-                labelId.setText(getSelectedData()[0]);
+                labelId.setText("Updating record with id: " + getSelectedData()[0]);
                 tfName.setText(getSelectedData()[1]);
                 tfEmail.setText(getSelectedData()[2]);
                 tfPhone.setText(getSelectedData()[3]);
                 tfAddress.setText(getSelectedData()[4]);
                 tfPassword.setText(getSelectedData()[5]);
 
+                updateButton.setEnabled(true);
+                deleteButton.setEnabled(true);
+                addDataButton.setEnabled(false);
+            }
+        });
+
+        // added so user can press ESC button on keyboard to "unclick" selected data
+        KeyStroke keystroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
+        adminPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keystroke, "ESCAPE");
+        adminPanel.getActionMap().put("ESCAPE", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                displayData();
             }
         });
 
@@ -76,9 +74,7 @@ public class AdminForm extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                String sql = "UPDATE users SET name = ?, email = ?, phone = ?, address = ?, password = ? WHERE id = " + getSelectedData()[0] + ";";
-
-                addUserToDatabase(sql,
+                updateUserInDatabase(
                         tfName.getText(),
                         tfEmail.getText(),
                         tfPhone.getText(),
@@ -89,21 +85,16 @@ public class AdminForm extends JFrame {
             }
         });
 
-
         addDataButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                String sql = "INSERT INTO users (name, email, phone, address, password) " +
-                        "VALUES (?, ?, ?, ?, ?)";
-
                 addUserToDatabase(
-                        sql,
-                tfName.getText(),
-                tfEmail.getText(),
-                tfPhone.getText(),
-                tfAddress.getText(),
-                tfPassword.getText()
+                        tfName.getText(),
+                        tfEmail.getText(),
+                        tfPhone.getText(),
+                        tfAddress.getText(),
+                        tfPassword.getText()
                 );
                 displayData();
             }
@@ -112,29 +103,40 @@ public class AdminForm extends JFrame {
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                deleteUserFromDatabase(getSelectedData()[2]);
+                displayData();
             }
         });
-
         setVisible(true);
     }
 
-    public String[] getSelectedData(){
+    public String[] getSelectedData() {
         DefaultTableModel tbModel = (DefaultTableModel) tbDatabase.getModel();
 
-        return new String[] {
-        tbModel.getValueAt(tbDatabase.getSelectedRow(), 0).toString(),
-        tbModel.getValueAt(tbDatabase.getSelectedRow(), 1).toString(),
-        tbModel.getValueAt(tbDatabase.getSelectedRow(), 2).toString(),
-        tbModel.getValueAt(tbDatabase.getSelectedRow(), 3).toString(),
-        tbModel.getValueAt(tbDatabase.getSelectedRow(), 4).toString(),
-        tbModel.getValueAt(tbDatabase.getSelectedRow(), 5).toString(),
-
-      };
-
+        return new String[]{
+                tbModel.getValueAt(tbDatabase.getSelectedRow(), 0).toString(),
+                tbModel.getValueAt(tbDatabase.getSelectedRow(), 1).toString(),
+                tbModel.getValueAt(tbDatabase.getSelectedRow(), 2).toString(),
+                tbModel.getValueAt(tbDatabase.getSelectedRow(), 3).toString(),
+                tbModel.getValueAt(tbDatabase.getSelectedRow(), 4).toString(),
+                tbModel.getValueAt(tbDatabase.getSelectedRow(), 5).toString(),
+        };
     }
 
     public void displayData() {
+
+        // "unclicking" added button instead of update and delete buttons
+        labelId.setText("Adding new record to database.");
+        addDataButton.setEnabled(true);
+        updateButton.setEnabled(false);
+        deleteButton.setEnabled(false);
+
+        // clearing fields for adding new records
+        tfName.setText("");
+        tfEmail.setText("");
+        tfPhone.setText("");
+        tfAddress.setText("");
+        tfPassword.setText("");
 
         DefaultTableModel tableModel = new DefaultTableModel() {
             @Override
@@ -185,18 +187,12 @@ public class AdminForm extends JFrame {
             stmt.close();
             conn.close();
 
-
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
     }
 
-
-
-
-    private  User addUserToDatabase(String sql, String name, String email, String phone, String address, String password) {
-
-        User user = null;
+    private void addUserToDatabase(String name, String email, String phone, String address, String password) {
 
         try {
             Connection conn = DriverManager.getConnection(
@@ -207,6 +203,9 @@ public class AdminForm extends JFrame {
 
             Statement stmt = conn.createStatement();
 
+            String sql = "INSERT INTO users (name, email, phone, address, password) " +
+                    "VALUES (?, ?, ?, ?, ?)";
+
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, email);
@@ -214,49 +213,33 @@ public class AdminForm extends JFrame {
             preparedStatement.setString(4, address);
             preparedStatement.setString(5, password);
 
-           Connection connEmail = DriverManager.getConnection(
-                            ConnectToDatabase.DB_URL,
-                            ConnectToDatabase.USERNAME,
-                            ConnectToDatabase.PASSWORD
-                    );
-                    PreparedStatement statementEmail = connEmail.prepareStatement("SELECT email FROM users where email= ?");
-                    statementEmail.setString(1, email);
-                    ResultSet resultSetEmail = statementEmail.executeQuery();
+            Connection connEmail = DriverManager.getConnection(
+                    ConnectToDatabase.DB_URL,
+                    ConnectToDatabase.USERNAME,
+                    ConnectToDatabase.PASSWORD
+            );
+            PreparedStatement statementEmail = connEmail.prepareStatement(
+                    "SELECT email FROM users where email= ?");
+            statementEmail.setString(1, email);
+            ResultSet resultSetEmail = statementEmail.executeQuery();
 
-                    if (resultSetEmail.next() && !email.equals(tfEmail.getText())) {
-                        JOptionPane.showMessageDialog(this,
-                                "Email " + email + " already used!",
-                                "Email already used",
-                                JOptionPane.ERROR_MESSAGE
-                        );
+            if (resultSetEmail.next()) {
+                JOptionPane.showMessageDialog(this,
+                        "Email " + email + " already used!",
+                        "Email already used",
+                        JOptionPane.ERROR_MESSAGE
+                );
 
-                    } else if (email.equals("") || name.equals("") || password.equals("")) {
-                        JOptionPane.showMessageDialog(this,
-                                "Please enter all required fields",
-                                "Try again",
-                                JOptionPane.ERROR_MESSAGE
-                        );
+            } else if (email.equals("") || name.equals("") || password.equals("")) {
+                JOptionPane.showMessageDialog(this,
+                        "Please enter all required fields",
+                        "Try again",
+                        JOptionPane.ERROR_MESSAGE
+                );
 
-                    } else {
-
-                        int addedRows = preparedStatement.executeUpdate();
-
-                        if (addedRows > 0) {
-                            user = new User();
-                            user.name = name;
-                            user.email = email;
-                            user.phone = phone;
-                            user.address = address;
-                            user.password = password;
-
-                        } else {
-                            JOptionPane.showMessageDialog(this,
-                                    "Failed to register new user!",
-                                    "Try again",
-                                    JOptionPane.ERROR_MESSAGE
-                            );
-                        }
-                    }
+            } else {
+                preparedStatement.executeUpdate();
+            }
 
             stmt.close();
             conn.close();
@@ -266,13 +249,95 @@ public class AdminForm extends JFrame {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        return user;
     }
 
+    private void updateUserInDatabase(String name, String email, String phone, String address, String password) {
 
-    public static void main(String[] args) {
-        AdminForm adminForm = new AdminForm(null);
+        try {
+            Connection conn = DriverManager.getConnection(
+                    ConnectToDatabase.DB_URL,
+                    ConnectToDatabase.USERNAME,
+                    ConnectToDatabase.PASSWORD
+            );
+
+            Statement stmt = conn.createStatement();
+
+            String sql = "UPDATE users SET name = ?, email = ?, phone = ?, address = ?, password = ? WHERE id = " + getSelectedData()[0] + ";";
+
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setString(1, name);
+            preparedStatement.setString(2, email);
+            preparedStatement.setString(3, phone);
+            preparedStatement.setString(4, address);
+            preparedStatement.setString(5, password);
+
+            Connection connEmail = DriverManager.getConnection(
+                    ConnectToDatabase.DB_URL,
+                    ConnectToDatabase.USERNAME,
+                    ConnectToDatabase.PASSWORD
+            );
+
+            PreparedStatement statementEmail = connEmail.prepareStatement("SELECT email FROM users where email= ?");
+            statementEmail.setString(1, email);
+            ResultSet resultSetEmail = statementEmail.executeQuery();
+
+            if (resultSetEmail.next()) {
+
+                if (tfEmail.getText().equals(getSelectedData()[2])) {
+
+                    preparedStatement.executeUpdate();
+
+                } else {
+                    JOptionPane.showMessageDialog(this,
+                            "Email " + email + " already used!",
+                            "Email already used",
+                            JOptionPane.ERROR_MESSAGE
+                    );
+                }
+
+            } else if (email.equals("") || name.equals("") || password.equals("")) {
+                JOptionPane.showMessageDialog(this,
+                        "Please enter all required fields",
+                        "Try again",
+                        JOptionPane.ERROR_MESSAGE
+                );
+
+            } else {
+                preparedStatement.executeUpdate();
+            }
+
+            stmt.close();
+            conn.close();
+            connEmail.close();
+            statementEmail.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
+    private void deleteUserFromDatabase(String email) {
+
+        try {
+            Connection conn = DriverManager.getConnection(
+                    ConnectToDatabase.DB_URL,
+                    ConnectToDatabase.USERNAME,
+                    ConnectToDatabase.PASSWORD
+            );
+
+            Statement stmt = conn.createStatement();
+
+            String sql = "DELETE FROM  users WHERE email = ?";
+
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setString(1, email);
+            preparedStatement.executeUpdate();
+
+            stmt.close();
+            conn.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

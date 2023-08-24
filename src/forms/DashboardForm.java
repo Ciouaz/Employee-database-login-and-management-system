@@ -18,6 +18,8 @@ public class DashboardForm extends JFrame {
     private JButton btnRegister;
     private JButton loginButton;
     private JButton loginAdminButton;
+    private JLabel lbError;
+    private JLabel lbIcon;
 
 
     public DashboardForm(JFrame parent) {
@@ -90,6 +92,15 @@ public class DashboardForm extends JFrame {
 
         } catch (Exception e) {
             e.printStackTrace();
+
+            JOptionPane.showMessageDialog(DashboardForm.this,
+                    "Error: you are not connected to database",
+                    "Database error",
+                    JOptionPane.ERROR_MESSAGE);
+
+            lbError.setText("ERROR: YOU ARE NOT CONNECTED TO DATABASE!");
+
+
         }
     }
 }
