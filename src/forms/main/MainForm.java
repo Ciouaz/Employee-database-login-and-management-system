@@ -59,22 +59,15 @@ public class MainForm extends JFrame {
     private void connectToDatabase() {
 
         try {
-            Connection conn = DriverManager.getConnection(
-                    ConnectToDatabase.MYSQL_SERVER_URL,
-                    ConnectToDatabase.USERNAME,
-                    ConnectToDatabase.PASSWORD
-            );
+            Connection conn = ConnectToDatabase.connectToServer();
 
             Statement statement = conn.createStatement();
             statement.executeUpdate("CREATE DATABASE IF NOT EXISTS MyDatabase");
+
             statement.close();
             conn.close();
 
-            conn = DriverManager.getConnection(
-                    ConnectToDatabase.DB_URL,
-                    ConnectToDatabase.USERNAME,
-                    ConnectToDatabase.PASSWORD
-            );
+            conn = ConnectToDatabase.connect();
 
             statement = conn.createStatement();
             String sql = "CREATE TABLE IF NOT EXISTS users ("

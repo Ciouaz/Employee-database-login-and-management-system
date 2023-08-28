@@ -1,6 +1,7 @@
 package forms.user;
 
 import application.ConnectToDatabase;
+import application.MessageDialogs;
 import application.User;
 
 import javax.swing.*;
@@ -110,15 +111,12 @@ public class LoginForm extends JDialog {
             new UserForm(null, user.email);
 
         } else {
-            System.out.println("Authentication canceled");
+            MessageDialogs.operationCanceled();
         }
     }
 
     private void cancel() {
-        JOptionPane.showMessageDialog(LoginForm.this,
-                "Operation canceled.",
-                "Canceled",
-                JOptionPane.ERROR_MESSAGE);
+        MessageDialogs.operationCanceled();
         dispose();
     }
 
@@ -133,10 +131,7 @@ public class LoginForm extends JDialog {
             showData(user);
 
         } else {
-            JOptionPane.showMessageDialog(LoginForm.this,
-                    "Email or password invalid.",
-                    "Try again",
-                    JOptionPane.ERROR_MESSAGE);
+            MessageDialogs.emailOrPasswordInvalid();
         }
     }
 }

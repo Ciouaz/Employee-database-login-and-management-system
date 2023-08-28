@@ -1,6 +1,7 @@
 package forms.user;
 
 import application.ConnectToDatabase;
+import application.MessageDialogs;
 import application.User;
 
 import javax.swing.*;
@@ -137,13 +138,9 @@ public class RegistrationForm extends JDialog {
         User user = null;
 
         try {
-            Connection conn = DriverManager.getConnection(
-                    ConnectToDatabase.DB_URL,
-                    ConnectToDatabase.USERNAME,
-                    ConnectToDatabase.PASSWORD
-            );
-
+            Connection conn = ConnectToDatabase.connect();
             Statement stmt = conn.createStatement();
+
             String sql = "INSERT INTO users (name, email, phone, address, password) " +
                     "VALUES (?, ?, ?, ?, ?)";
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
@@ -177,7 +174,7 @@ public class RegistrationForm extends JDialog {
     public void run(User user) {
 
         if (user != null) {
-            System.out.println("Successful registration of: " + user.name);
+
             JOptionPane.showMessageDialog(this,
                     "Successful registration of: " + user.name, "Successful Authentication",
                     JOptionPane.PLAIN_MESSAGE);
@@ -185,13 +182,7 @@ public class RegistrationForm extends JDialog {
     }
 
     public void cancel(){
-        JOptionPane.showMessageDialog(RegistrationForm.this,
-                "Operation canceled.",
-                "Canceled",
-                JOptionPane.ERROR_MESSAGE);
+        MessageDialogs.operationCanceled();
         dispose();
     }
-
-
-
 }

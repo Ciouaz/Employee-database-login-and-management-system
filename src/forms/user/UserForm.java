@@ -1,6 +1,7 @@
 package forms.user;
 
 import application.ConnectToDatabase;
+import application.MessageDialogs;
 
 import javax.swing.*;
 import java.awt.*;
@@ -124,38 +125,20 @@ public class UserForm extends JFrame{
 
                 if (tfEmail.getText().equals(email)) {
 
-                    preparedStatement.executeUpdate();
-
-                    JOptionPane.showMessageDialog(this,
-                            "Data changed successfully!",
-                            "Success",
-                            JOptionPane.INFORMATION_MESSAGE
-                    );
+                   preparedStatement.executeUpdate();
+                   MessageDialogs.dataChangedSuccessfully();
 
                 } else {
-                    JOptionPane.showMessageDialog(this,
-                            "Email " + tfEmail.getText() + " already used!",
-                            "Email already used",
-                            JOptionPane.ERROR_MESSAGE
-                    );
+                    MessageDialogs.emailAlreadyUsed(tfEmail.getText());
                 }
 
             } else if (tfEmail.getText().equals("") || tfName.getText().equals("") || tfPassword.getText().equals("")) {
-                JOptionPane.showMessageDialog(this,
-                        "Please enter all required fields.",
-                        "Try again",
-                        JOptionPane.ERROR_MESSAGE
-                );
+                MessageDialogs.enterAllFields();
 
             } else {
                 preparedStatement.executeUpdate();
                 this.email = tfEmail.getText();
-
-                JOptionPane.showMessageDialog(this,
-                        "Data changed successfully!",
-                        "Success",
-                        JOptionPane.INFORMATION_MESSAGE
-                );
+                MessageDialogs.dataChangedSuccessfully();
             }
 
             stmt.close();
@@ -170,12 +153,8 @@ public class UserForm extends JFrame{
 
     public void deleteAccount() {
         try {
-            Connection conn = DriverManager.getConnection(
-                    ConnectToDatabase.DB_URL,
-                    ConnectToDatabase.USERNAME,
-                    ConnectToDatabase.PASSWORD
-            );
 
+            Connection conn = ConnectToDatabase.connect();
             Statement stmt = conn.createStatement();
 
             String sql = "DELETE FROM  users WHERE email = ?";
@@ -198,12 +177,7 @@ public class UserForm extends JFrame{
                 dispose();
 
             } else {
-
-                JOptionPane.showMessageDialog(this,
-                        "Operation canceled.",
-                        "Canceled",
-                        JOptionPane.INFORMATION_MESSAGE
-                );
+                MessageDialogs.operationCanceled();
             }
             stmt.close();
             conn.close();

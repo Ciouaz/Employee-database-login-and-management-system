@@ -8,4 +8,28 @@ public class ConnectToDatabase {
     public final static String USERNAME = "root";
     public final static String PASSWORD = "";
 
+    public static Connection connect(){
+        try {
+            return DriverManager.getConnection(
+                    ConnectToDatabase.DB_URL,
+                    ConnectToDatabase.USERNAME,
+                    ConnectToDatabase.PASSWORD
+            );
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Connection connectToServer(){
+        try {
+            return DriverManager.getConnection(
+                    ConnectToDatabase.MYSQL_SERVER_URL,
+                    ConnectToDatabase.USERNAME,
+                    ConnectToDatabase.PASSWORD
+            );
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 };

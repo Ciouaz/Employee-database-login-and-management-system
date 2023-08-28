@@ -1,5 +1,7 @@
 package forms.admin;
 
+import application.MessageDialogs;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -59,28 +61,17 @@ public class AdminLoginForm extends JFrame {
 
         if (password.equals(ADMIN_PASSWORD)) {
 
-            JOptionPane.showMessageDialog(AdminLoginForm.this,
-                    "You successfully login as an administrator",
-                    "Successful login as an administrator",
-                    JOptionPane.PLAIN_MESSAGE);
-
+            MessageDialogs.successLoginAsAdmin();
             dispose();
+
             new AdminForm(AdminLoginForm.this);
 
         } else {
-            JOptionPane.showMessageDialog(AdminLoginForm.this,
-                    "Wrong administrator password!",
-                    "Wrong password",
-                    JOptionPane.ERROR_MESSAGE);
+            MessageDialogs.wrongAdministratorPassword();
         }
     }
     private void cancel(){
-        JOptionPane.showMessageDialog(AdminLoginForm.this,
-                "Operation canceled",
-                "Canceled",
-                JOptionPane.ERROR_MESSAGE);
+        MessageDialogs.operationCanceled();
         dispose();
     }
-
-
 }

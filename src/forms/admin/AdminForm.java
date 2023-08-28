@@ -1,6 +1,7 @@
 package forms.admin;
 
 import application.ConnectToDatabase;
+import application.MessageDialogs;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -195,12 +196,7 @@ public class AdminForm extends JFrame {
     private void addUserToDatabase(String name, String email, String phone, String address, String password) {
 
         try {
-            Connection conn = DriverManager.getConnection(
-                    ConnectToDatabase.DB_URL,
-                    ConnectToDatabase.USERNAME,
-                    ConnectToDatabase.PASSWORD
-            );
-
+            Connection conn = ConnectToDatabase.connect();
             Statement stmt = conn.createStatement();
 
             String sql = "INSERT INTO users (name, email, phone, address, password) " +
@@ -213,29 +209,17 @@ public class AdminForm extends JFrame {
             preparedStatement.setString(4, address);
             preparedStatement.setString(5, password);
 
-            Connection connEmail = DriverManager.getConnection(
-                    ConnectToDatabase.DB_URL,
-                    ConnectToDatabase.USERNAME,
-                    ConnectToDatabase.PASSWORD
-            );
+            Connection connEmail = ConnectToDatabase.connect();
             PreparedStatement statementEmail = connEmail.prepareStatement(
                     "SELECT email FROM users where email= ?");
             statementEmail.setString(1, email);
             ResultSet resultSetEmail = statementEmail.executeQuery();
 
             if (resultSetEmail.next()) {
-                JOptionPane.showMessageDialog(this,
-                        "Email " + email + " already used!",
-                        "Email already used",
-                        JOptionPane.ERROR_MESSAGE
-                );
+                MessageDialogs.emailAlreadyUsed(email);
 
             } else if (email.equals("") || name.equals("") || password.equals("")) {
-                JOptionPane.showMessageDialog(this,
-                        "Please enter all required fields.",
-                        "Try again",
-                        JOptionPane.ERROR_MESSAGE
-                );
+               MessageDialogs.enterAllFields();
 
             } else {
                 preparedStatement.executeUpdate();
@@ -254,12 +238,8 @@ public class AdminForm extends JFrame {
     private void updateUserInDatabase(String name, String email, String phone, String address, String password) {
 
         try {
-            Connection conn = DriverManager.getConnection(
-                    ConnectToDatabase.DB_URL,
-                    ConnectToDatabase.USERNAME,
-                    ConnectToDatabase.PASSWORD
-            );
 
+            Connection conn = ConnectToDatabase.connect();
             Statement stmt = conn.createStatement();
 
             String sql = "UPDATE users SET name = ?, email = ?, phone = ?, address = ?, password = ? WHERE id = " + getSelectedData()[0];
@@ -288,19 +268,11 @@ public class AdminForm extends JFrame {
                     preparedStatement.executeUpdate();
 
                 } else {
-                    JOptionPane.showMessageDialog(this,
-                            "Email " + email + " already used!",
-                            "Email already used",
-                            JOptionPane.ERROR_MESSAGE
-                    );
+                    MessageDialogs.emailAlreadyUsed(email);
                 }
 
             } else if (email.equals("") || name.equals("") || password.equals("")) {
-                JOptionPane.showMessageDialog(this,
-                        "Please enter all required fields.",
-                        "Try again",
-                        JOptionPane.ERROR_MESSAGE
-                );
+                MessageDialogs.enterAllFields();
 
             } else {
                 preparedStatement.executeUpdate();
@@ -319,12 +291,7 @@ public class AdminForm extends JFrame {
     private void deleteUserFromDatabase(String email) {
 
         try {
-            Connection conn = DriverManager.getConnection(
-                    ConnectToDatabase.DB_URL,
-                    ConnectToDatabase.USERNAME,
-                    ConnectToDatabase.PASSWORD
-            );
-
+            Connection conn = ConnectToDatabase.connect();
             Statement stmt = conn.createStatement();
 
             String sql = "DELETE FROM  users WHERE email = ?";
