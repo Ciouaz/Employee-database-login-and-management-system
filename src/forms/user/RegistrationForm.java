@@ -138,7 +138,7 @@ public class RegistrationForm extends JDialog {
         User user = null;
 
         try {
-            Connection conn = ConnectToDatabase.connect();
+            Connection conn = ConnectToDatabase.connectToDatabase();
             Statement stmt = conn.createStatement();
 
             String sql = "INSERT INTO users (name, email, phone, address, password) " +

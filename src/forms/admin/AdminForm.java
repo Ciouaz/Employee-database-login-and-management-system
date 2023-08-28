@@ -150,10 +150,7 @@ public class AdminForm extends JFrame {
         tbDatabase.setModel(tableModel);
 
         try {
-            Connection conn = DriverManager.getConnection(
-                    ConnectToDatabase.DB_URL,
-                    ConnectToDatabase.USERNAME,
-                    ConnectToDatabase.PASSWORD);
+            Connection conn = ConnectToDatabase.connectToDatabase();
 
             Statement stmt = conn.createStatement();
             String sql = "SELECT * FROM users";
@@ -196,7 +193,7 @@ public class AdminForm extends JFrame {
     private void addUserToDatabase(String name, String email, String phone, String address, String password) {
 
         try {
-            Connection conn = ConnectToDatabase.connect();
+            Connection conn = ConnectToDatabase.connectToDatabase();
             Statement stmt = conn.createStatement();
 
             String sql = "INSERT INTO users (name, email, phone, address, password) " +
@@ -209,7 +206,7 @@ public class AdminForm extends JFrame {
             preparedStatement.setString(4, address);
             preparedStatement.setString(5, password);
 
-            Connection connEmail = ConnectToDatabase.connect();
+            Connection connEmail = ConnectToDatabase.connectToDatabase();
             PreparedStatement statementEmail = connEmail.prepareStatement(
                     "SELECT email FROM users where email= ?");
             statementEmail.setString(1, email);
@@ -239,7 +236,7 @@ public class AdminForm extends JFrame {
 
         try {
 
-            Connection conn = ConnectToDatabase.connect();
+            Connection conn = ConnectToDatabase.connectToDatabase();
             Statement stmt = conn.createStatement();
 
             String sql = "UPDATE users SET name = ?, email = ?, phone = ?, address = ?, password = ? WHERE id = " + getSelectedData()[0];
@@ -291,7 +288,7 @@ public class AdminForm extends JFrame {
     private void deleteUserFromDatabase(String email) {
 
         try {
-            Connection conn = ConnectToDatabase.connect();
+            Connection conn = ConnectToDatabase.connectToDatabase();
             Statement stmt = conn.createStatement();
 
             String sql = "DELETE FROM  users WHERE email = ?";

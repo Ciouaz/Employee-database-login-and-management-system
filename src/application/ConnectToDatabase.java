@@ -8,7 +8,7 @@ public class ConnectToDatabase {
     public final static String USERNAME = "root";
     public final static String PASSWORD = "";
 
-    public static Connection connect(){
+    public static Connection connectToDatabase(){
         try {
             return DriverManager.getConnection(
                     ConnectToDatabase.DB_URL,

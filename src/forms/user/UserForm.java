@@ -154,7 +154,7 @@ public class UserForm extends JFrame{
     public void deleteAccount() {
         try {
 
-            Connection conn = ConnectToDatabase.connect();
+            Connection conn = ConnectToDatabase.connectToDatabase();
             Statement stmt = conn.createStatement();
 
             String sql = "DELETE FROM  users WHERE email = ?";

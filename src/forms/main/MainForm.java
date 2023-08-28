@@ -10,7 +10,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.Statement;
 
 public class MainForm extends JFrame {
@@ -67,7 +66,7 @@ public class MainForm extends JFrame {
             statement.close();
             conn.close();
 
-            conn = ConnectToDatabase.connect();
+            conn = ConnectToDatabase.connectToDatabase();
 
             statement = conn.createStatement();
             String sql = "CREATE TABLE IF NOT EXISTS users ("
