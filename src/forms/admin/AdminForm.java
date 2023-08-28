@@ -232,7 +232,7 @@ public class AdminForm extends JFrame {
 
             } else if (email.equals("") || name.equals("") || password.equals("")) {
                 JOptionPane.showMessageDialog(this,
-                        "Please enter all required fields",
+                        "Please enter all required fields.",
                         "Try again",
                         JOptionPane.ERROR_MESSAGE
                 );
@@ -262,7 +262,7 @@ public class AdminForm extends JFrame {
 
             Statement stmt = conn.createStatement();
 
-            String sql = "UPDATE users SET name = ?, email = ?, phone = ?, address = ?, password = ? WHERE id = " + getSelectedData()[0] + ";";
+            String sql = "UPDATE users SET name = ?, email = ?, phone = ?, address = ?, password = ? WHERE id = " + getSelectedData()[0];
 
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, name);
@@ -297,7 +297,7 @@ public class AdminForm extends JFrame {
 
             } else if (email.equals("") || name.equals("") || password.equals("")) {
                 JOptionPane.showMessageDialog(this,
-                        "Please enter all required fields",
+                        "Please enter all required fields.",
                         "Try again",
                         JOptionPane.ERROR_MESSAGE
                 );

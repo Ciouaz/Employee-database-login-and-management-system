@@ -103,18 +103,11 @@ public class LoginForm extends JDialog {
 
                 if (user != null) {
 
-            System.out.println("Successful Authentication of: " + user.name);
-            System.out.println("           Email: " + user.email);
-            System.out.println("           Phone: " + user.phone);
-            System.out.println("           Address: " + user.address);
-
             JOptionPane.showMessageDialog(this,
-                    "Email: " + user.email + "\n" +
-                            "Phone: " + user.phone + "\n" +
-                            "Address: " + user.address, "Successful Authentication of: " + user.name,
+                    "Successful authentication of: " + user.name + ".", "Success",
                     JOptionPane.PLAIN_MESSAGE);
 
-            new UserForm(null);
+            new UserForm(null, user.email);
 
         } else {
             System.out.println("Authentication canceled");
@@ -123,7 +116,7 @@ public class LoginForm extends JDialog {
 
     private void cancel() {
         JOptionPane.showMessageDialog(LoginForm.this,
-                "Operation canceled",
+                "Operation canceled.",
                 "Canceled",
                 JOptionPane.ERROR_MESSAGE);
         dispose();
@@ -141,7 +134,7 @@ public class LoginForm extends JDialog {
 
         } else {
             JOptionPane.showMessageDialog(LoginForm.this,
-                    "Email or Password Invalid",
+                    "Email or password invalid.",
                     "Try again",
                     JOptionPane.ERROR_MESSAGE);
         }

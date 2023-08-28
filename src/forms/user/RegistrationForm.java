@@ -74,7 +74,7 @@ public class RegistrationForm extends JDialog {
 
         if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
             JOptionPane.showMessageDialog(this,
-                    "Please enter all required fields",
+                    "Please enter all required fields.",
                     "Try again",
                     JOptionPane.ERROR_MESSAGE
             );
@@ -82,7 +82,7 @@ public class RegistrationForm extends JDialog {
         }
         if (!password.equals(confirmPassword)) {
             JOptionPane.showMessageDialog(this,
-                    "Confirm password does not match",
+                    "Confirm password does not match.",
                     "Try again",
                     JOptionPane.ERROR_MESSAGE);
             return;
@@ -181,18 +181,12 @@ public class RegistrationForm extends JDialog {
             JOptionPane.showMessageDialog(this,
                     "Successful registration of: " + user.name, "Successful Authentication",
                     JOptionPane.PLAIN_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(this,
-                    "Something went wrong or email: " + tfEmail + "already used",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-            System.out.println("Registration canceled");
         }
     }
 
     public void cancel(){
         JOptionPane.showMessageDialog(RegistrationForm.this,
-                "Operation canceled",
+                "Operation canceled.",
                 "Canceled",
                 JOptionPane.ERROR_MESSAGE);
         dispose();

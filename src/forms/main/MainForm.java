@@ -1,4 +1,4 @@
-package forms;
+package forms.main;
 
 import application.ConnectToDatabase;
 import forms.admin.AdminLoginForm;
@@ -13,7 +13,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 
-public class DashboardForm extends JFrame {
+public class MainForm extends JFrame {
     private JPanel dashboardPanel;
     private JButton btnRegister;
     private JButton loginButton;
@@ -22,7 +22,7 @@ public class DashboardForm extends JFrame {
     private JLabel lbIcon;
 
 
-    public DashboardForm(JFrame parent) {
+    public MainForm(JFrame parent) {
         setTitle("Dashboard");
         setContentPane(dashboardPanel);
         setMinimumSize(new Dimension(500, 550));
@@ -36,7 +36,7 @@ public class DashboardForm extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                new RegistrationForm(DashboardForm.this);
+                new RegistrationForm(MainForm.this);
             }
         });
 
@@ -44,14 +44,14 @@ public class DashboardForm extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                new LoginForm(DashboardForm.this);
+                new LoginForm(MainForm.this);
 
             }
         });
         loginAdminButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new AdminLoginForm(DashboardForm.this);
+                new AdminLoginForm(MainForm.this);
             }
         });
     }
@@ -66,7 +66,7 @@ public class DashboardForm extends JFrame {
             );
 
             Statement statement = conn.createStatement();
-            statement.executeUpdate("CREATE DATABASE IF NOT EXISTS MyStore");
+            statement.executeUpdate("CREATE DATABASE IF NOT EXISTS MyDatabase");
             statement.close();
             conn.close();
 
@@ -93,13 +93,13 @@ public class DashboardForm extends JFrame {
         } catch (Exception e) {
             e.printStackTrace();
 
-            JOptionPane.showMessageDialog(DashboardForm.this,
-                    "Error: you are not connected to database",
+            JOptionPane.showMessageDialog(MainForm.this,
+                    "ERROR: YOU ARE NOT CONNECTED TO DATABASE!",
                     "Database error",
                     JOptionPane.ERROR_MESSAGE);
 
             lbError.setText("ERROR: YOU ARE NOT CONNECTED TO DATABASE!");
-
+            lbError.setForeground(Color.RED);
 
         }
     }
